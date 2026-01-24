@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub User Finder</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 350px;
+        }
+
+        input {
+            padding: 10px;
+            width: 70%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* रिजल्ट दिखने के लिए स्टाइल */
+        #result-container {
+            margin-top: 20px;
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #007bff;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .error-msg {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h2>GitHub User Search</h2>
+        <div>
+            <input type="text" id="username-input" placeholder="Enter username...">
+            <button id="search-btn">Search</button>
+        </div>
+
+        <div id="result-container">
+        </div>
+    </div>
+
+    <script>
+        // 1. HTML से चीज़ें (Elements) उठा लेते हैं
+        const searchBtn = document.getElementById('search-btn');
+        const usernameInput = document.getElementById('username-input');
+        const resultContainer = document.getElementById('result-container');
+
+        // 2. बटन पर क्लिक करने का इंतज़ार करते हैं
+        searchBtn.addEventListener('click', function () {
+
+            // इनपुट बॉक्स से वैल्यू निकालो
+            const username = usernameInput.value.trim();
+
+            // अगर खाली है तो कुछ मत करो
+            if (username === "") {
+                alert("भाई, कोई नाम तो डालो!");
+                return;
+            }
+
+            // 3. सर्च शुरू! पहले लोडिंग मैसेज दिखाते हैं
+            resultContainer.innerHTML = "<p>Loading data...</p>";
+
+            // GitHub की फ्री API का URL
+            const apiUrl = `https://api.github.com/users/${username}`;
+
+            // --- यहाँ से तुम्हारा FETCH का कोड शुरू ---
+            fetch(apiUrl)
+                .then((res) => {
+                    console.log("Status Code:", res.status);
+
+                    // हमने सीखा था कि 404 एरर को मैन्युअली पकड़ना पड़ता है
+                    if (!res.ok) {
+                        // अगर यूज़र नहीं मिला (404) या कोई और सर्वर एरर है
+                        throw new Error("User not found!");
+                    }
+                    return res.json(); // अगले .then के लिए प्रॉमिस
+                })
+                .then((data) => {
+                    // यहाँ हमें असली डेटा (सिंगल ऑब्जेक्ट) मिल गया
+                    console.log(data);
+
+                    // 4. अब इस डेटा को HTML में सजा कर दिखाते हैं
+                    // (इसे DOM Manipulation कहते हैं)
+                    const htmlOutput = `
+                <img src="${data.avatar_url}" alt="Profile Pic" class="profile-img">
+                <h3>${data.name || data.login}</h3> <p>${data.bio || "No bio available"}</p>
+                
+                <div class="stats">
+                    <div>
+                        <strong>Repo</strong>
+                        <p>${data.public_repos}</p>
+                    </div>
+                    <div>
+                        <strong>Followers</strong>
+                        <p>${data.followers}</p>
+                    </div>
+                    <div>
+                        <strong>Following</strong>
+                        <p>${data.following}</p>
+                    </div>
+                </div>
+            `;
+
+                    // कंटेनर के अंदर यह HTML डाल दो
+                    resultContainer.innerHTML = htmlOutput;
+                })
+                .catch((err) => {
+                    // 5. अगर कोई भी एरर आई (नेटवर्क या 404), तो यहाँ दिखेगी
+                    console.error("Error पकड़ ली:", err.message);
+                    resultContainer.innerHTML = `<p class="error-msg">❌ ${err.message}</p>`;
+                });
+        });
+    </script>
+
+</body>
+
+</html>
