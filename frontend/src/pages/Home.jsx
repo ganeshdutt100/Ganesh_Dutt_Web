@@ -1,5 +1,5 @@
 import React from 'react'
-import HeroSection from '../components/home/heroSection'
+import HeroSection from '../components/home/HeroSection'
 import Stats from '../components/home/Stats'
 import FeaturedProjects from '../components/FeaturedProjects'
 import Experience from '../components/Experience'
