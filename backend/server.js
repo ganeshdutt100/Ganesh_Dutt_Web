@@ -26,7 +26,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "*",
+    origin: "https://ganesh-dutt-portfolio.vercel.app",
     credentials: true,
   }),
 );
