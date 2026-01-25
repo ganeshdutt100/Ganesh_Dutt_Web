@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaBars, FaTimes, FaGithub, FaLinkedin } from 'react-icons/fa';
+// Is line ko copy-paste kar lo (Instagram aur MobileAlt add kar diya hai)
+import { FaBars, FaTimes, FaGithub, FaLinkedin, FaInstagram, FaMobileAlt } from 'react-icons/fa';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -100,6 +101,9 @@ const Navbar = () => {
                         <Link to="/" onClick={() => setIsOpen(false)} className={`${isActive('/')} hover:translate-x-2 transition-transform duration-300`}>
                             Home
                         </Link>
+                        <Link to="/about" onClick={() => setIsOpen(false)} className={`${isActive('/about')} hover:translate-x-2 transition-transform duration-300`}>
+                            About
+                        </Link>
                         <Link to="/projects" onClick={() => setIsOpen(false)} className={`${isActive('/projects')} hover:translate-x-2 transition-transform duration-300`}>
                             My Projects
                         </Link>
@@ -112,9 +116,44 @@ const Navbar = () => {
                     <div className="mt-auto">
                         <div className="w-full h-[1px] bg-gray-700 mb-6"></div>
                         <p className="text-gray-500 text-sm mb-4">Connect with me</p>
-                        <div className="flex gap-4">
-                            <a href="#" className="p-2 bg-gray-800 rounded-full text-white hover:bg-blue-600 transition"><FaLinkedin /></a>
-                            <a href="#" className="p-2 bg-gray-800 rounded-full text-white hover:bg-gray-700 transition"><FaGithub /></a>
+                        <div className="flex gap-4 ">
+                            {/* GitHub */}
+                            <a
+                                href="https://github.com/ganeshdutt100"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-3 bg-gray-800 rounded-full text-gray-400 hover:text-white hover:bg-gray-700 transition border border-gray-700 hover:border-gray-500"
+                            >
+                                <FaGithub size={20} />
+                            </a>
+
+                            {/* LinkedIn */}
+                            <a
+                                href="https://www.linkedin.com/in/ganesh-dutt-514a94243/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-3 bg-gray-800 rounded-full text-gray-400 hover:text-blue-400 hover:bg-gray-700 transition border border-gray-700 hover:border-gray-500"
+                            >
+                                <FaLinkedin size={20} />
+                            </a>
+
+                            {/* Instagram */}
+                            <a
+                                href="https://www.instagram.com/webgyaan.hub/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-3 bg-gray-800 rounded-full text-gray-400 hover:text-pink-600 hover:bg-gray-700 transition border border-gray-700 hover:border-gray-500"
+                            >
+                                <FaInstagram size={20} />
+                            </a>
+
+                            {/* Phone (No target_blank needed for calls) */}
+                            <a
+                                href="tel:+917078404837"
+                                className="p-3 bg-gray-800 rounded-full text-gray-400 hover:text-green-600 hover:bg-gray-700 transition border border-gray-700 hover:border-gray-500"
+                            >
+                                <FaMobileAlt size={20} />
+                            </a>
                         </div>
                     </div>
 

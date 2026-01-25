@@ -29,18 +29,34 @@ const Testimonials = () => {
     const settings = {
         dots: true,
         className: "center",
-        centerMode: reviews.length >= 3,
-        infinite: reviews.length >= 3,
+        centerMode: true,       // Desktop par ON rahega (Style ke liye)
+        infinite: true,
         centerPadding: "0px",
-        slidesToShow: reviews.length < 3 ? 1 : 3,
+        slidesToShow: 3,
         speed: 500,
         autoplay: true,
-        autoplaySpeed: 3000,
+        autoplaySpeed: 5000,    // Thoda slow kiya taki padh paye
         focusOnSelect: true,
         arrows: false,
         responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 1, centerMode: true, centerPadding: "60px" } },
-            { breakpoint: 640, settings: { slidesToShow: 1, centerMode: true, centerPadding: "20px" } }
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 1,
+                    centerMode: true,
+                    centerPadding: "40px"
+                }
+            },
+            {
+                // 👇 MOBILE SETTINGS (Fix)
+                breakpoint: 640,
+                settings: {
+                    slidesToShow: 1,
+                    centerMode: false,  // Mobile pe 3D effect band
+                    centerPadding: "0px", // Full width card
+                    dots: true // Dots rahenge navigation ke liye
+                }
+            }
         ]
     };
 
@@ -101,40 +117,54 @@ const Testimonials = () => {
 
     // --- 🔥 UPDATED CSS (BLUR REMOVED) ---
     const styles = `
-        .testimonial-wrapper { padding-bottom: 50px; }
-        
-        /* Default Slide (Side Cards) - NO BLUR */
-        .slick-slide { 
-            transition: all 0.5s ease-in-out; 
-            transform: scale(0.95); /* Thoda chhota */
-            opacity: 0.6;           /* Thoda dim, par saaf */
-            z-index: 1; 
+        .testimonial-wrapper { padding-bottom: 60px; }
+
+        /* --- DESKTOP STYLES (3D Look) --- */
+        .slick-slide {
+            transition: all 0.5s ease;
+            opacity: 0.5;
+            transform: scale(0.9);
+            padding: 10px;
         }
 
-        /* Active Slide (Center Card) */
-        .slick-center { 
-            transform: scale(1.05); /* Thoda bada */
-            opacity: 1;             /* Full visible */
-            z-index: 10; 
-            position: relative; 
+        .slick-center {
+            opacity: 1;
+            transform: scale(1.05);
+            z-index: 10;
         }
 
-        .slick-center .testimonial-card { 
-            background: rgba(17, 24, 39, 0.95); 
-            border: 1px solid #3b82f6; 
-            box-shadow: 0px 10px 40px -10px rgba(59, 130, 246, 0.6); 
+        /* --- MOBILE STYLES (Clean Look) --- */
+        @media (max-width: 640px) {
+            .slick-slide {
+                opacity: 1 !important;      /* Mobile pe sab saaf dikhega */
+                transform: scale(1) !important; /* Koi chhota-bada nahi */
+                padding: 0 10px;            /* Screen ke kinare se thoda gap */
+            }
+            
+            /* Mobile card height fix */
+            .testimonial-card {
+                height: auto !important;    /* Content ke hisab se height */
+                min-height: 350px;
+            }
         }
 
-        .slick-dots { bottom: -40px; }
-        .slick-dots li button:before { font-size: 10px; color: gray; opacity: 0.5; }
-        .slick-dots li.slick-active button:before { font-size: 14px; color: #3b82f6; opacity: 1; }
-        
-        /* Modal Scrollbar */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #1f2937; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+        /* CARD COLORS */
+        .testimonial-card {
+            background: linear-gradient(145deg, #1f2937 0%, #111827 100%);
+            border: 1px solid #374151;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+        }
+
+        /* HIGHLIGHT ACTIVE CARD */
+        .slick-center .testimonial-card,
+        .slick-slide.slick-active .testimonial-card {
+            border: 1px solid #3b82f6;
+            background: #1e293b;
+        }
+
+        .slick-dots li button:before { color: gray; }
+        .slick-dots li.slick-active button:before { color: #3b82f6; }
     `;
-
     return (
         <section className="py-24 bg-gray-900 relative overflow-hidden" id="testimonials">
             <style>{styles}</style>
