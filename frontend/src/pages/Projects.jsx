@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ProjectCard from '../components/ui/ProjectCard';
-import { FaPlus, FaUserSecret, FaEye, FaEyeSlash } from 'react-icons/fa'; // Icons Import
+import { FaPlus, FaUserSecret, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Projects = () => {
     // --- STATES ---
@@ -13,13 +13,13 @@ const Projects = () => {
 
     // Security Data
     const [adminKey, setAdminKey] = useState("");
-    const [showPassword, setShowPassword] = useState(false); // Eye Icon Logic
+    const [showPassword, setShowPassword] = useState(false);
 
     // Project Form Data
     const [formData, setFormData] = useState({
-        title: '', description: '', image: '', techStack: '', gitLink: '', liveLink: ''
+        title: '', description: '', techStack: '', gitLink: '', liveLink: ''
     });
-    const [file, setFile] = useState(null);
+    const [imageFile, setFile] = useState(null);
 
     // --- 1. LOAD PROJECTS ---
     useEffect(() => {
@@ -40,32 +40,28 @@ const Projects = () => {
 
     // --- 2. SECURITY HANDLERS ---
     const handleAddClick = () => {
-        setIsAuthModalOpen(true); // Pehle Security Modal khulega
-        setAdminKey("");          // Password field clear
-        setShowPassword(false);   // Reset Eye icon
+        setIsAuthModalOpen(true);
+        setAdminKey("");
+        setShowPassword(false);
     };
 
-    // --- UPDATED: PASSWORD CHECK VIA BACKEND API ---
     const handleAuthSubmit = async (e) => {
         e.preventDefault();
-
         try {
             const res = await fetch('http://localhost:5000/api/admin/verify-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password: adminKey })
             });
-
             const data = await res.json();
 
             if (data.success) {
-                setIsAuthModalOpen(false); // Security Modal Band
-                setIsModalOpen(true);      // Main Form Chalu
+                setIsAuthModalOpen(false);
+                setIsModalOpen(true);
             } else {
                 alert("🚨 ACCESS DENIED! Wrong Password.");
                 setAdminKey("");
             }
-
         } catch (error) {
             console.error("Verification Error:", error);
             alert("Server Error! Backend check karo.");
@@ -79,29 +75,52 @@ const Projects = () => {
     const handleCancel = () => {
         setIsModalOpen(false);
         setIsAuthModalOpen(false);
-        setAdminKey(""); // Password memory se delete
+        setAdminKey("");
         setFile(null);
     };
 
+    // --- MAIN SUBMIT (With ImgBB Logic) ---
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const data = new FormData();
-        data.append('title', formData.title);
-        data.append('description', formData.description);
-        data.append('gitLink', formData.gitLink);
-        data.append('liveLink', formData.liveLink);
-        const techArray = formData.techStack.split(',').map(item => item.trim());
-        data.append('techStack', techArray);
-        if (file) data.append('image', file);
+        let imageUrl = null;
 
         try {
-            const res = await fetch('http://localhost:5000/api/projects', {
+            // 1. ImgBB Upload
+            if (imageFile) {
+                const imgFormData = new FormData();
+                imgFormData.append('image', imageFile);
+
+                // Tera ImgBB Key
+                const IMGBB_API_KEY = "79d3b2cc143b05444683b68a94bd7d67";
+
+                const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: imgFormData
+                });
+
+                const imgData = await imgRes.json();
+                imageUrl = imgData.data.url;
+                console.log("Uploaded Image:", imageUrl);
+            }
+
+            // 2. Send Data to Backend (JSON Format)
+            const projectPayload = {
+                title: formData.title,
+                description: formData.description,
+                techStack: formData.techStack.split(',').map(item => item.trim()), // Convert string to array
+                gitLink: formData.gitLink,
+                liveLink: formData.liveLink,
+                image: imageUrl // Send URL
+            };
+
+            const res = await fetch('http://localhost:5000/api/projects/add', {
                 method: 'POST',
                 headers: {
-                    'admin-secret': adminKey
+                    'Content-Type': 'application/json', // Important for JSON
+                    'admin-secret': adminKey // Security Check
                 },
-                body: data
+                body: JSON.stringify(projectPayload)
             });
 
             const result = await res.json();
@@ -110,7 +129,7 @@ const Projects = () => {
                 alert('✅ Project Added Successfully!');
                 setIsModalOpen(false);
                 setAdminKey("");
-                setFormData({ title: '', description: '', image: '', techStack: '', gitLink: '', liveLink: '' });
+                setFormData({ title: '', description: '', techStack: '', gitLink: '', liveLink: '' });
                 setFile(null);
                 fetchProjects();
             } else {
@@ -118,7 +137,7 @@ const Projects = () => {
             }
         } catch (error) {
             console.error(error);
-            alert("Server Error");
+            alert("Server Error or Image Upload Failed");
         }
     };
 
@@ -137,64 +156,34 @@ const Projects = () => {
             </div>
 
             {/* --- FLOATING ADD BUTTON --- */}
-            <button
-                onClick={handleAddClick}
-                className="fixed bottom-7 right-25 z-40 bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-full shadow-2xl transition hover:scale-110"
-            >
+            <button onClick={handleAddClick} className="fixed bottom-7 right-7 z-40 bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-full shadow-2xl transition hover:scale-110">
                 <FaPlus size={24} />
             </button>
 
-            {/* --- 1. AUTH MODAL (Identity Verification) --- */}
-            {/* --- 1. AUTH MODAL (Identity Verification) --- */}
+            {/* --- 1. AUTH MODAL --- */}
             {isAuthModalOpen && (
                 <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex justify-center items-center z-[60] p-4">
                     <div className="bg-gray-800 border border-red-500/50 p-8 rounded-2xl w-full max-w-sm text-center shadow-[0_0_30px_rgba(239,68,68,0.2)]">
-                        <div className="flex justify-center mb-4 text-red-500">
-                            <FaUserSecret size={50} />
-                        </div>
+                        <div className="flex justify-center mb-4 text-red-500"><FaUserSecret size={50} /></div>
                         <h2 className="text-2xl font-bold mb-2 text-white">Identity Verification</h2>
                         <p className="text-gray-400 mb-6 text-sm">Restricted Area. Identify yourself.</p>
 
                         <form onSubmit={handleAuthSubmit} autoComplete="off">
-
-                            {/* --- TRICK 1: DUMMY INPUTS (Hidden) --- */}
-                            {/* Browser inko dekhega aur ignore kar dega */}
-                            <input type="text" name="fake-user" style={{ display: 'none' }} />
-                            <input type="password" name="fake-pass" style={{ display: 'none' }} />
-
-                            {/* --- TRICK 2: READONLY HACK --- */}
                             <div className="relative mb-6">
                                 <input
-                                    // 1. Type: Show/Hide logic
                                     type={showPassword ? "text" : "password"}
-
-                                    // 2. Name: Aisa naam jo password na lage
                                     name="search_query_verifier"
-                                    id="search_query_verifier"
-
-                                    // 3. AutoComplete: Random string taaki browser confuse ho
                                     autoComplete="off"
-
-                                    // 4. ReadOnly Hack: Shuru mein locked, click karne par unlock
-                                    // Isse browser auto-fill nahi kar payega
-                                    readOnly
-                                    onFocus={(e) => e.target.removeAttribute('readonly')}
-
+                                    readOnly onFocus={(e) => e.target.removeAttribute('readonly')}
                                     className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white text-center tracking-widest text-xl focus:border-red-500 focus:outline-none pr-10"
                                     placeholder="Enter Code"
                                     value={adminKey}
                                     onChange={(e) => setAdminKey(e.target.value)}
                                 />
-
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition"
-                                >
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition">
                                     {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
                                 </button>
                             </div>
-
                             <div className="flex gap-2">
                                 <button type="button" onClick={() => setIsAuthModalOpen(false)} className="flex-1 py-2 text-gray-400 hover:text-white">Cancel</button>
                                 <button type="submit" className="flex-1 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg font-bold">Access</button>
@@ -203,7 +192,8 @@ const Projects = () => {
                     </div>
                 </div>
             )}
-            {/* --- 2. MAIN PROJECT FORM (Hidden until Auth) --- */}
+
+            {/* --- 2. MAIN PROJECT FORM --- */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-[60] p-4">
                     <div className="bg-gray-800 border border-blue-500/30 p-6 rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">

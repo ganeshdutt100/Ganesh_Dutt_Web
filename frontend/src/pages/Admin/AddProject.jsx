@@ -10,7 +10,7 @@ const AddProject = () => {
     const [techStack, setTechStack] = useState('');
     const [gitLink, setGitLink] = useState('');
     const [liveLink, setLiveLink] = useState('');
-    const [image, setImage] = useState(null); // Image file ke liye state
+    const [image, setImage] = useState(null); // Image file state
 
     const [loading, setLoading] = useState(false);
 
@@ -19,19 +19,35 @@ const AddProject = () => {
         e.preventDefault();
         setLoading(true);
 
-        // --- IMPORTANT: FORM DATA CREATE KARNA ---
-        // Image bhejne ke liye FormData zaroori hai
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('techStack', techStack); // Backend isse array banayega
-        formData.append('gitLink', gitLink);
-        formData.append('liveLink', liveLink);
-        formData.append('image', image); // Ye File object hai
+        let imageUrl = null;
 
         try {
-            // Headers automatically 'multipart/form-data' set ho jayenge
-            await axios.post('http://localhost:5000/api/projects', formData);
+            // --- STEP 1: Upload Image to ImgBB ---
+            if (image) {
+                const imgFormData = new FormData();
+                imgFormData.append('image', image);
+
+                // Tera ImgBB Key
+                const IMGBB_API_KEY = "79d3b2cc143b05444683b68a94bd7d67";
+
+                const imgRes = await axios.post(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, imgFormData);
+                imageUrl = imgRes.data.data.url; // URL mil gaya
+                console.log("ImgBB URL:", imageUrl);
+            }
+
+            // --- STEP 2: Prepare Data for Backend (JSON) ---
+            const projectData = {
+                title,
+                description: description, // Backend mein humne schema mein 'desc' rakha tha, check karlena
+                techStack, // String hi bhej rahe hain, backend sambhal lega
+                githubLink: gitLink, // Backend schema ke hisaab se name match karein
+                liveLink,
+                image: imageUrl // Ab URL bhej rahe hain
+            };
+
+            // --- STEP 3: Send to Backend ---
+            // Backend URL update kiya hai (/add endpoint par)
+            await axios.post('http://localhost:5000/api/projects/add', projectData);
 
             toast.success('Project Added Successfully! 🚀');
 
@@ -42,19 +58,18 @@ const AddProject = () => {
             setGitLink('');
             setLiveLink('');
             setImage(null);
-            // File input ko manually clear karne ke liye
             document.getElementById("fileInput").value = "";
 
         } catch (error) {
-            toast.error('Failed to add project!');
             console.error(error);
+            toast.error('Failed to add project!');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-xl ">
+        <div className="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-xl pt-20">
             <ToastContainer theme="dark" position="top-right" />
 
             <h2 className="text-2xl font-bold text-white mb-6 border-b border-gray-700 pb-4">
@@ -81,7 +96,7 @@ const AddProject = () => {
                     <textarea value={description} onChange={(e) => setDescription(e.target.value)} required rows="4" className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:border-blue-500 focus:outline-none"></textarea>
                 </div>
 
-                {/* IMAGE UPLOAD INPUT (Changed from Text to File) */}
+                {/* IMAGE UPLOAD INPUT */}
                 <div>
                     <label className="block text-gray-400 mb-2 text-sm">Project Image</label>
                     <input

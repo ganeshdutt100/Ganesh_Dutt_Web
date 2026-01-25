@@ -1,39 +1,47 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer"); // 👇 Import Multer
-const path = require("path");
-const {
-  getTestimonials,
-  addTestimonial,
-  deleteTestimonial,
-} = require("../controllers/testimonialController");
+const Testimonial = require("../models/TestimonialModel");
 
-// --- MULTER CONFIG (Image Upload ke liye) ---
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) =>
-    cb(null, "student-" + Date.now() + path.extname(file.originalname)),
-});
-const upload = multer({ storage });
-
-// Routes
-router.get("/", getTestimonials);
-
-// 👇 Yahan 'upload.single' lagaya aur controller logic yahin update kar diya taaki easy rahe
-router.post("/add", upload.single("image"), async (req, res) => {
+// GET ALL
+router.get("/", async (req, res) => {
   try {
-    const { name, role, message, rating } = req.body;
-    const image = req.file ? req.file.filename : null; // Agar photo aayi to save karo
+    const tests = await Testimonial.find().sort({ createdAt: -1 });
+    res.json(tests);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+});
 
-    const Testimonial = require("../models/TestimonialModel");
-    const newTest = new Testimonial({ name, role, message, rating, image });
+// ADD NEW (Ab ye Simple JSON accept karega)
+router.post("/add", express.json(), async (req, res) => {
+  try {
+    // Frontend se ab direct image ka URL aa raha hai
+    const { name, role, message, rating, image } = req.body;
+
+    const newTest = new Testimonial({
+      name,
+      role,
+      message,
+      rating,
+      image, // Ye ab string (URL) hai
+    });
+
     await newTest.save();
     res.status(201).json(newTest);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error adding testimonial" });
   }
 });
 
-router.delete("/delete/:id", deleteTestimonial);
+// DELETE
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    await Testimonial.findByIdAndDelete(req.params.id);
+    res.json({ message: "Deleted Successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting" });
+  }
+});
 
 module.exports = router;

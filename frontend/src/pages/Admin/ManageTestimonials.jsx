@@ -18,6 +18,7 @@ const ManageTestimonials = () => {
             setTestimonials(res.data);
         } catch (error) { console.error(error); }
     };
+
     useEffect(() => { fetchData(); }, []);
 
     // Handle Input
@@ -29,8 +30,10 @@ const ManageTestimonials = () => {
     // Handle Image Selection
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        setImageFile(file);
-        setPreview(URL.createObjectURL(file));
+        if (file) {
+            setImageFile(file);
+            setPreview(URL.createObjectURL(file));
+        }
     };
 
     // Remove Selected Image
@@ -39,37 +42,52 @@ const ManageTestimonials = () => {
         setPreview(null);
     };
 
-    // Submit (FormData ke saath)
+    // --- MAIN SUBMIT FUNCTION (ImgBB Logic) ---
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
-        const data = new FormData();
-        data.append('name', form.name);
-        data.append('role', form.role);
-        data.append('message', form.message);
-        data.append('rating', form.rating);
-        if (imageFile) {
-            data.append('image', imageFile);
-        }
+        let imageUrl = null; // Default agar photo nahi daali
 
         try {
-            await axios.post('http://localhost:5000/api/testimonials/add', data, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            // 1. Agar Photo select ki hai to ImgBB pe upload karo
+            if (imageFile) {
+                const formData = new FormData();
+                formData.append('image', imageFile);
+
+                // 👇 APNI IMGBB API KEY YAHAN DAALNA (Wahi same jo frontend mein use ki thi)
+                const IMGBB_API_KEY = "79d3b2cc143b05444683b68a94bd7d67";
+
+                const imgRes = await axios.post(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, formData);
+                imageUrl = imgRes.data.data.url; // ImgBB se URL mil gaya
+            }
+
+            // 2. Ab Data Backend ko bhejo (Simple JSON)
+            const testimonialData = {
+                name: form.name,
+                role: form.role,
+                message: form.message,
+                rating: form.rating,
+                image: imageUrl // URL bhej rahe hain
+            };
+
+            await axios.post('http://localhost:5000/api/testimonials/add', testimonialData);
+
+            // Success & Reset
             fetchData();
-            // Reset Form
             setForm({ name: '', role: '', message: '', rating: 5 });
             clearImage();
             alert("Review Added Successfully!");
+
         } catch (error) {
-            alert("Error adding testimonial");
+            console.error("Error:", error);
+            alert("Error adding testimonial. Check console.");
         } finally {
             setLoading(false);
         }
     };
 
-    // Delete
+    // Delete Function
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this review?")) return;
         try {
@@ -150,7 +168,7 @@ const ManageTestimonials = () => {
                             {/* Display Image */}
                             <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-800 border border-gray-600">
                                 {test.image ? (
-                                    <img src={`http://localhost:5000/uploads/${test.image}`} alt={test.name} className="w-full h-full object-cover" />
+                                    <img src={test.image} alt={test.name} className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-blue-400 bg-blue-900/30">
                                         <FaUserTie />

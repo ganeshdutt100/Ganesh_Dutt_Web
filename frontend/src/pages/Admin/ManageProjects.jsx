@@ -1,87 +1,100 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaTrash, FaEdit, FaGithub } from 'react-icons/fa';
-import { toast, ToastContainer } from 'react-toastify';
+import { Link } from 'react-router-dom'; // 👈 Navigation ke liye
+import { FaProjectDiagram, FaTrash, FaPlus, FaGithub, FaLink } from 'react-icons/fa';
 
 const ManageProjects = () => {
     const [projects, setProjects] = useState([]);
 
-    // Fetch Projects
-    const fetchProjects = async () => {
+    // --- FETCH DATA ---
+    const fetchData = async () => {
         try {
             const res = await axios.get('http://localhost:5000/api/projects');
-            setProjects(res.data.reverse()); // Latest first
-        } catch (error) {
-            console.error(error);
-        }
+            setProjects(res.data);
+        } catch (error) { console.error("Error fetching projects:", error); }
     };
 
-    useEffect(() => {
-        fetchProjects();
-    }, []);
+    useEffect(() => { fetchData(); }, []);
 
-    // Delete Project
+    // --- DELETE FUNCTION ---
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this project?")) {
-            try {
-                await axios.delete(`http://localhost:5000/api/projects/${id}`);
-                toast.success("Project Deleted!");
-                fetchProjects(); // List refresh karo
-            } catch (error) {
-                toast.error("Error deleting project");
-            }
-        }
+        if (!window.confirm("Are you sure you want to delete this project?")) return;
+        try {
+            await axios.delete(`http://localhost:5000/api/projects/delete/${id}`);
+            fetchData(); // List refresh karo
+        } catch (error) { alert("Error deleting project"); }
     };
 
     return (
-        <div>
-            <ToastContainer theme="dark" position="top-right" />
-            <h2 className="text-2xl font-bold text-white mb-6">Manage Projects ({projects.length})</h2>
+        <div className="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-xl min-h-screen">
 
-            <div className="grid gap-4">
-                {projects.map((project) => (
-                    <div key={project._id} className="bg-gray-800 p-4 rounded-xl border border-gray-700 flex items-center justify-between group hover:border-blue-500 transition-colors">
+            {/* --- HEADER --- */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                    <FaProjectDiagram className="text-purple-500" /> Manage Projects
+                </h2>
 
-                        <div className="flex items-center gap-4">
-                            {/* Tiny Image Thumbnail */}
-                            <img
-                                src={
-                                    project.image
-                                        ? `http://localhost:5000/${project.image}`  // Backend URL Joda
-                                        : "https://via.placeholder.com/50"
-                                }
-                                alt="thumb"
-                                className="w-16 h-16 rounded-lg object-cover bg-gray-700"
-                                // Agar image load na ho to placeholder dikhane ke liye:
-                                onError={(e) => { e.target.src = "https://via.placeholder.com/50"; }}
-                            />
+                {/* 👇 Link to Your Separate Add Page */}
+                <Link
+                    to="/admin/add-project"
+                    className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all shadow-lg hover:shadow-purple-500/30"
+                >
+                    <FaPlus /> Add New Project
+                </Link>
+            </div>
 
-                            <div>
-                                <h3 className="font-bold text-white text-lg">{project.title}</h3>
-                                <p className="text-xs text-gray-400 line-clamp-1">{project.description}</p>
-                                <div className="flex gap-2 mt-2">
-                                    {project.techStack.map((tech, i) => (
-                                        <span key={i} className="text-[10px] bg-gray-900 px-2 py-0.5 rounded text-blue-300 border border-gray-700">{tech}</span>
-                                    ))}
+            {/* --- LIST DISPLAY (Grid) --- */}
+            {projects.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {projects.map((proj) => (
+                        <div key={proj._id} className="bg-gray-900 rounded-xl border border-gray-700 overflow-hidden group relative hover:border-purple-500 transition-all">
+
+                            {/* Image Thumbnail */}
+                            <div className="h-48 overflow-hidden relative">
+                                <img
+                                    src={proj.image || "https://via.placeholder.com/300"}
+                                    alt={proj.title}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            </div>
+
+                            {/* Content */}
+                            <div className="p-5">
+                                <h4 className="font-bold text-white text-lg mb-2">{proj.title}</h4>
+                                <p className="text-gray-400 text-sm mb-4 line-clamp-2">{proj.desc}</p>
+
+                                <div className="flex gap-4">
+                                    {proj.githubLink && (
+                                        <a href={proj.githubLink} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-xs text-gray-400 hover:text-white transition-colors">
+                                            <FaGithub /> Code
+                                        </a>
+                                    )}
+                                    {proj.liveLink && (
+                                        <a href={proj.liveLink} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-xs text-gray-400 hover:text-purple-400 transition-colors">
+                                            <FaLink /> Live Demo
+                                        </a>
+                                    )}
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex items-center gap-3">
-                            {/* <button className="p-2 bg-gray-700 hover:bg-blue-600 text-white rounded-lg transition-colors">
-                                <FaEdit />
-                            </button> */}
+                            {/* Delete Button (Absolute Position) */}
                             <button
-                                onClick={() => handleDelete(project._id)}
-                                className="p-2 bg-gray-700 hover:bg-red-600 text-white rounded-lg transition-colors"
+                                onClick={() => handleDelete(proj._id)}
+                                className="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all shadow-lg transform translate-y-2 group-hover:translate-y-0"
+                                title="Delete Project"
                             >
                                 <FaTrash />
                             </button>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center py-20 bg-gray-900/50 rounded-2xl border border-dashed border-gray-700">
+                    <p className="text-gray-400 text-lg">No projects found.</p>
+                    <p className="text-gray-500 text-sm mt-2">Click the button above to add your first project.</p>
+                </div>
+            )}
         </div>
     );
 };

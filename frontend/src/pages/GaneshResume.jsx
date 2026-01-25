@@ -80,7 +80,7 @@ const GaneshResume = () => {
                                 <FaCode /> Skills
                             </h3>
                             <div className="flex flex-wrap gap-2">
-                                {['HTML5', 'CSS3', 'JavaScript', 'React.js', 'Redux', 'Next.js', 'Express.js', 'Tailwind CSS', 'Bootstrap', 'Material UI', 'Java (Core)', 'MongoDB', 'Git & GitHub'].map((skill) => (
+                                {['HTML5', 'CSS3', 'JavaScript', 'TypeScript', 'React.js', 'Redux', 'Next.js', 'Express.js', 'Tailwind CSS', 'Bootstrap', 'Material UI', 'Java (Core)', 'MongoDB', 'Git & GitHub'].map((skill) => (
                                     <span key={skill} className="px-3 py-1 bg-gray-700/50 border border-gray-600 rounded text-xs text-white">
                                         {skill}
                                     </span>
@@ -131,7 +131,7 @@ const GaneshResume = () => {
                                 <div className="relative" data-aos="zoom-in" data-aos-delay="400">
                                     <span className="absolute -left-[41px] top-1 w-5 h-5 bg-blue-500 rounded-full border-4 border-gray-900"></span>
                                     <h4 className="text-xl font-bold text-white">Frontend Developer</h4>
-                                    <p className="text-blue-400 text-sm font-semibold mb-2">VM Mining Technologies Pvt. Ltd | Oct 2023 - Present</p>
+                                    <p className="text-blue-400 text-sm font-semibold mb-2">I3infosoft Pvt Ltd| March 2025 - Present</p>
                                     <ul className="text-gray-400 text-sm space-y-2 list-disc pl-4">
                                         <li>Leveraged React.js, Next.js, Material UI, and Tailwind for frontend development.</li>
                                         <li>Created solutions for projects like Brajyatraa web, gaming apps, and real estate platforms.</li>
@@ -144,7 +144,7 @@ const GaneshResume = () => {
                                 <div className="relative" data-aos="zoom-in" data-aos-delay="400">
                                     <span className="absolute -left-[41px] top-1 w-5 h-5 bg-gray-600 rounded-full border-4 border-gray-900"></span>
                                     <h4 className="text-xl font-bold text-white">Developer & Trainer</h4>
-                                    <p className="text-gray-400 text-sm font-semibold mb-2">4Achievers Pvt. Ltd | July 2022 - Aug 2023</p>
+                                    <p className="text-gray-400 text-sm font-semibold mb-2">4Achievers Pvt. Ltd | Oct 2023 - March 2025</p>
                                     <ul className="text-gray-400 text-sm space-y-2 list-disc pl-4">
                                         <li>Developed training materials for HTML, CSS, JS, React.js, and Core Java.</li>
                                         <li>Conducted training sessions and assessed learners through live projects.</li>
@@ -165,12 +165,12 @@ const GaneshResume = () => {
 
                                 {/* Project 1: BrajYatraa */}
                                 <div className="bg-gray-800 p-5 rounded-xl border border-gray-700 hover:border-blue-500 transition" data-aos="fade-up" data-aos-delay="400">
-                                    <h4 className="font-bold text-lg text-white mb-1">BrajYatraa.com</h4>
+                                    <h4 className="font-bold text-lg text-white mb-1">Chandrayaan Mission</h4>
                                     <p className="text-xs text-blue-400 mb-3">HTML, CSS, Bootstrap, JS</p>
                                     <p className="text-gray-400 text-sm mb-4">
-                                        A real-world tourism platform for Braj region information and packages. Managed end-to-end development.
+                                        The Chandrayaan mission is India's lunar exploration program. Its official website offers extensive information about the mission's goals, spacecraft, instruments, and updates. Visitors can access images, videos, and data to study the Moon's geology and minerals. It's a valuable resource for researchers, students, and lunar science enthusiasts.
                                     </p>
-                                    <a href="https://brajyatraa.com/" target="_blank" rel="noreferrer" className="text-sm text-white underline hover:text-blue-400">View Live Project</a>
+                                    <a href="https://ganeshdutt100.github.io/Mission_Chandrayaan/" target="_blank" rel="noreferrer" className="text-sm text-white underline hover:text-blue-400">View Live Project</a>
                                 </div>
 
                                 {/* Project 2: Amazon Clone */}

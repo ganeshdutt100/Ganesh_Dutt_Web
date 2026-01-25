@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import ProjectCard from './ui/ProjectCard'; // Tera existing card component
+import ProjectCard from './ui/ProjectCard';
 import { FaArrowRight } from 'react-icons/fa';
 
 const FeaturedProjects = () => {
     const [projects, setProjects] = useState([]);
 
-    // --- FETCH PROJECTS FROM BACKEND ---
     useEffect(() => {
         const fetchProjects = async () => {
             try {
-                // Hum wahi same API use kar rahe hain jo Projects page par ki thi
                 const res = await fetch('http://localhost:5000/api/projects');
                 const data = await res.json();
 
-                // --- TRICK: Sirf pehle 3 projects uthao ---
-                // Reverse isliye kiya taaki jo sabse latest dala hai wo pehle dikhe
-                setProjects(data.reverse().slice(0, 3));
+                // --- 🔥 FIX: SORT BY DATE (Newest First) ---
+                // Hum date compare kar rahe hain taaki latest wala upar aaye
+                const sortedProjects = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                // Sirf Top 3 Projects utha liye
+                setProjects(sortedProjects.slice(0, 3));
+
             } catch (error) {
                 console.error("Error fetching projects:", error);
             }
@@ -26,11 +28,11 @@ const FeaturedProjects = () => {
     }, []);
 
     return (
-        <div className=" bg-gray-900 relative">
+        <div className="bg-gray-900 relative">
 
             <div className="max-w-6xl mx-auto px-6">
 
-                {/* --- SECTION HEADER --- */}
+                {/* --- HEADER --- */}
                 <div className="text-center mb-16" data-aos="fade-up">
                     <h2 className="text-3xl md:text-5xl font-bold mb-4">
                         Featured <span className="text-blue-500">Projects</span>
@@ -45,13 +47,12 @@ const FeaturedProjects = () => {
                 {projects.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {projects.map((project) => (
-                            // Hum wahi Card use kar rahe hain jo tune pehle banaya tha
                             <ProjectCard key={project._id} project={project} />
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center text-gray-500 py-10">
-                        <p>Loading Awesome Projects...</p>
+                    <div className="text-center text-gray-500 py-10 border border-dashed border-gray-800 rounded-xl">
+                        <p>No featured projects yet. Adding soon...</p>
                     </div>
                 )}
 
