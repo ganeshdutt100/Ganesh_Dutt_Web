@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaRobot, FaPaperPlane, FaTimes, FaUser } from "react-icons/fa"; // FaUser add kiya hai
+import { FaRobot, FaPaperPlane, FaTimes, FaUser } from "react-icons/fa";
 
 const ChatBot = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -12,10 +12,14 @@ const ChatBot = () => {
 
     const messagesEndRef = useRef(null);
 
+    // Auto-scroll to bottom
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
-    useEffect(scrollToBottom, [messages, loading]);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages, loading, isOpen]);
 
     useEffect(() => {
         if (isOpen) {
@@ -32,7 +36,6 @@ const ChatBot = () => {
         setLoading(true);
 
         try {
-
             const res = await fetch("https://ganesh-portfolio-api.onrender.com/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -48,19 +51,28 @@ const ChatBot = () => {
         }
     };
 
-    return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
+    // Handle Enter Key
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            handleSend();
+        }
+    };
 
-            {/* --- GREETING BUBBLE (Logic Same, UI Polished) --- */}
+    return (
+        <div className="fixed bottom-6 right-6 z-[999] flex flex-col items-end font-sans">
+
+            {/* --- GREETING BUBBLE (Hidden on Mobile) --- */}
+            {/* 'hidden sm:flex' ka matlab mobile pe gayab, laptop pe dikhega */}
             {!isOpen && showGreeting && (
-                <div className="mb-4 mr-2 relative animate-bounce hover:animate-pulse cursor-pointer" onClick={() => setIsOpen(true)}>
+                <div className="hidden sm:flex mb-4 mr-2 relative animate-bounce hover:animate-none cursor-pointer transition-transform hover:-translate-y-1" onClick={() => setIsOpen(true)}>
                     <div className="bg-white/90 backdrop-blur-md text-gray-900 px-4 py-3 rounded-2xl rounded-tr-none shadow-2xl border border-gray-200 flex items-center gap-3 max-w-[260px]">
                         <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-full text-white shadow-lg">
                             <FaRobot size={16} />
                         </div>
                         <div>
                             <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">AI Assistant</p>
-                            <p className="text-sm font-bold text-gray-800">Hey! Need help with code? 🚀</p>
+                            <p className="text-sm font-bold text-gray-800">Hey! Need help? 🚀</p>
                         </div>
 
                         {/* Close 'X' */}
@@ -76,9 +88,10 @@ const ChatBot = () => {
                 </div>
             )}
 
-            {/* --- CHAT WINDOW (New Modern UI) --- */}
+            {/* --- CHAT WINDOW --- */}
             <div className={`transition-all duration-300 transform origin-bottom-right ${isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 h-0 w-0'}`}>
-                <div className="bg-gray-900 border border-gray-700 w-[350px] md:w-[380px] h-[500px] rounded-2xl shadow-2xl flex flex-col overflow-hidden mb-4">
+                {/* Mobile Width Fix: w-[90vw] for mobile, w-[350px] for PC */}
+                <div className="bg-gray-900 border border-gray-700 w-[90vw] sm:w-[350px] md:w-[380px] h-[500px] max-h-[80vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden mb-4">
 
                     {/* Header */}
                     <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 flex justify-between items-center shadow-lg">
@@ -158,7 +171,7 @@ const ChatBot = () => {
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                            onKeyDown={handleKeyDown}
                             placeholder="Type a message..."
                             className="flex-1 bg-gray-900 text-white text-sm rounded-full px-5 py-3 outline-none focus:ring-2 focus:ring-blue-500/50 border border-gray-700 placeholder-gray-500 transition-all"
                             disabled={loading}
@@ -178,7 +191,7 @@ const ChatBot = () => {
             {/* --- FLOATING TOGGLE BUTTON --- */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-[0_4px_20px_rgba(37,99,235,0.5)] transition-all duration-300 transform hover:scale-110 z-50 ${isOpen ? 'bg-gray-700 rotate-90' : 'bg-gradient-to-r from-blue-600 to-purple-600 rotate-0'
+                className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-[0_4px_20px_rgba(37,99,235,0.5)] transition-all duration-300 transform hover:scale-110 z-[1000] ${isOpen ? 'bg-gray-700 rotate-90' : 'bg-gradient-to-r from-blue-600 to-purple-600 rotate-0'
                     }`}
             >
                 {isOpen ? <FaTimes size={22} /> : <FaRobot size={26} />}

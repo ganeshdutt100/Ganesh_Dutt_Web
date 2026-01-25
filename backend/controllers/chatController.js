@@ -1,72 +1,46 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const dotenv = require("dotenv");
-
-dotenv.config();
+require("dotenv").config(); // Dotenv load karna zaroori hai
 
 // API Key Check
-if (!process.env.GEMINI_API_KEY) {
-  console.error("❌ API Key Missing!");
-}
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = process.env.GEMINI_API_KEY
+  ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+  : null;
 
 const chatWithAI = async (req, res) => {
   try {
     const { message } = req.body;
 
-    console.log("📩 Request:", message);
-
+    // 1. Check Key & Message
+    if (!genAI) {
+      return res.status(500).json({ reply: "Server Error: API Key missing." });
+    }
     if (!message) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Message is required" });
+      return res.status(400).json({ reply: "Please send a message." });
     }
 
-    // --- 1. DEFINE YOUR PERSONA (SYSTEM PROMPT) ---
-    // Yahan hum AI ko batayenge ki wo kiska assistant hai aur tumhari skills kya hain.
+    // 2. Persona Set Karo
     const systemPrompt = `
-      You are an advanced AI Assistant for **Ganesh Dutt**. 
+      You are an AI Assistant for **Ganesh Dutt**'s Portfolio.
+      About Ganesh: MERN Stack Developer, Expert in React & Node.js.
       
-      **About Ganesh Dutt:**
-      - He is a professional **Full Stack Web Developer** and **Trainer**.
-      - He specializes in modern web technologies and building scalable applications.
+      Instructions:
+      - Act polite and professional.
+      - Keep answers short (under 50 words).
+      - If asked "Who made you?", say "I am powered by Gemini AI, integrated by Ganesh."
       
-      **Ganesh's Tech Stack (Skills):**
-      - **Frontend:** HTML, CSS, JavaScript, Bootstrap, Tailwind CSS, React.js, Next.js.
-      - **Backend:** Node.js, Express.js.
-      - **Full Stack:** MERN Stack expert.
-      
-      **Your Instructions:**
-      1. Always answer as Ganesh's assistant. Be polite, professional, and helpful.
-      2. If a user asks technical questions (code), provide solutions using Ganesh's preferred stack (e.g., prefer Tailwind over plain CSS, React over vanilla JS).
-      3. If asked "Who is Ganesh?", summarize his profile and skills mentioned above.
-      4. Keep answers concise but informative.
-
-      **User's Question:** ${message}
+      User Question: ${message}
     `;
 
-    // --- 2. SELECT MODEL ---
-    // Wahi model jo chal raha tha (Lite version)
-    const model = genAI.getGenerativeModel({
-      model: "gemini-flash-lite-latest",
-    });
-
-    // --- 3. GENERATE CONTENT ---
-    // Hum 'message' ki jagah 'systemPrompt' bhejenge jisme message included hai
+    // 3. AI Model Call
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(systemPrompt);
     const response = await result.response;
     const text = response.text();
 
-    console.log("✅ Success! Reply Sent.");
-    res.status(200).json({ success: true, reply: text });
+    res.status(200).json({ reply: text });
   } catch (error) {
-    console.error("🔥 Error:", error.message);
-
-    res.status(500).json({
-      success: false,
-      message: "API Issue. Please try again.",
-      error: error.message,
-    });
+    console.error("AI Error:", error);
+    res.status(500).json({ reply: "My brain is tired. Try again later!" });
   }
 };
 
