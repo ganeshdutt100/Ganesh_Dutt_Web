@@ -47,7 +47,7 @@ const AddProject = () => {
 
             // --- STEP 3: Send to Backend ---
             // Backend URL update kiya hai (/add endpoint par)
-            await axios.post('http://localhost:5000/api/projects/add', projectData);
+            await axios.post('https://ganesh-portfolio-api.onrender.com/api/projects/add', projectData);
 
             toast.success('Project Added Successfully! 🚀');
 

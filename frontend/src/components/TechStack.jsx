@@ -42,7 +42,7 @@ const TechStack = () => {
     useEffect(() => {
         const fetchSkills = async () => {
             try {
-                const res = await axios.get("http://localhost:5000/api/skills");
+                const res = await axios.get("https://ganesh-portfolio-api.onrender.com/api/skills");
                 setDbSkills(res.data);
             } catch (error) {
                 console.error("Error fetching skills:", error);
@@ -99,7 +99,7 @@ const TechStack = () => {
                                         // DATABASE SKILL (Image)
                                         <div className="w-16 h-16">
                                             <img
-                                                src={`http://localhost:5000/uploads/${skill.image}`}
+                                                src={`https://ganesh-portfolio-api.onrender.com/uploads/${skill.image}`}
                                                 alt={skill.name}
                                                 className="w-full h-full object-contain filter rounded-full group-hover:grayscale-0 transition-all duration-300"
                                                 onError={(e) => { e.target.src = "https://via.placeholder.com/150?text=IMG" }}

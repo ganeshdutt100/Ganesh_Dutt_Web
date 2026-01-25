@@ -9,7 +9,7 @@ const FeaturedProjects = () => {
     useEffect(() => {
         const fetchProjects = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/projects');
+                const res = await fetch('https://ganesh-portfolio-api.onrender.com/api/projects');
                 const data = await res.json();
 
                 // --- 🔥 FIX: SORT BY DATE (Newest First) ---

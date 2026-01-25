@@ -14,7 +14,7 @@ const ManageTestimonials = () => {
     // Fetch Data
     const fetchData = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/testimonials');
+            const res = await axios.get('https://ganesh-portfolio-api.onrender.com/api/testimonials');
             setTestimonials(res.data);
         } catch (error) { console.error(error); }
     };
@@ -71,7 +71,7 @@ const ManageTestimonials = () => {
                 image: imageUrl // URL bhej rahe hain
             };
 
-            await axios.post('http://localhost:5000/api/testimonials/add', testimonialData);
+            await axios.post('https://ganesh-portfolio-api.onrender.com/api/testimonials/add', testimonialData);
 
             // Success & Reset
             fetchData();
@@ -91,7 +91,7 @@ const ManageTestimonials = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this review?")) return;
         try {
-            await axios.delete(`http://localhost:5000/api/testimonials/delete/${id}`);
+            await axios.delete(`https://ganesh-portfolio-api.onrender.com/api/testimonials/delete/${id}`);
             fetchData();
         } catch (error) { alert("Error deleting"); }
     };

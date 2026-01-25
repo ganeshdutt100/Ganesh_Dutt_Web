@@ -23,7 +23,7 @@ const Overview = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/dashboard/stats');
+                const res = await axios.get('https://ganesh-portfolio-api.onrender.com/api/dashboard/stats');
                 setStats(res.data);
             } catch (error) {
                 console.error("Error fetching stats:", error);

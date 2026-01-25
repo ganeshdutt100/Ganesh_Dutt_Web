@@ -10,7 +10,7 @@ const AdminMessages = () => {
     // --- FETCH MESSAGES ---
     const fetchMessages = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/messages');
+            const res = await axios.get('https://ganesh-portfolio-api.onrender.com/api/messages');
             setMessages(res.data);
             setLoading(false);
         } catch (error) {
@@ -27,7 +27,7 @@ const AdminMessages = () => {
     const handleDelete = async (id) => {
         if (window.confirm("Delete this message?")) {
             try {
-                await axios.delete(`http://localhost:5000/api/messages/${id}`);
+                await axios.delete(`https://ganesh-portfolio-api.onrender.com/api/messages/${id}`);
                 toast.success("Message Deleted!");
                 // UI se hatane ke liye filter use kar rahe hain (API call bachane ke liye)
                 setMessages(messages.filter(msg => msg._id !== id));

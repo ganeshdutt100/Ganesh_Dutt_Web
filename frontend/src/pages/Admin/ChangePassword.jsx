@@ -25,7 +25,7 @@ const ChangePassword = () => {
         try {
             console.log("📡 Sending Request to Backend...");
             // Backend API call
-            const res = await axios.post('http://localhost:5000/api/auth/change-password', {
+            const res = await axios.post('https://ganesh-portfolio-api.onrender.com/api/auth/change-password', {
                 oldPassword,
                 newPassword
             });
@@ -103,8 +103,8 @@ const ChangePassword = () => {
                     type="submit" // Explicitly bata diya ki ye submit button hai
                     disabled={loading} // Jab loading ho to button disable kar do
                     className={`w-full font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2 ${loading
-                            ? 'bg-yellow-800 text-gray-400 cursor-not-allowed'
-                            : 'bg-yellow-600 hover:bg-yellow-500 text-white'
+                        ? 'bg-yellow-800 text-gray-400 cursor-not-allowed'
+                        : 'bg-yellow-600 hover:bg-yellow-500 text-white'
                         }`}
                 >
                     {loading ? (

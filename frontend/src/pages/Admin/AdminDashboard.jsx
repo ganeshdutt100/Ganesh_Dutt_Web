@@ -39,7 +39,7 @@ const AdminDashboard = () => {
         // Fetch Messages
         const fetchMessageData = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/messages');
+                const res = await axios.get('https://ganesh-portfolio-api.onrender.com/api/messages');
                 setTotalMessages(res.data.length);
             } catch (error) {
                 console.error("Error fetching messages", error);
@@ -49,7 +49,7 @@ const AdminDashboard = () => {
         // Fetch Profile (For Sidebar Logo & Name)
         const fetchProfileData = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/profile');
+                const res = await axios.get('https://ganesh-portfolio-api.onrender.com/api/profile');
                 if (res.data) {
                     setAdminProfile({
                         adminName: res.data.adminName || 'Ganesh',
@@ -111,7 +111,7 @@ const AdminDashboard = () => {
                     <div className="w-12 h-12 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white overflow-hidden shadow-md">
                         {adminProfile.adminLogo ? (
                             <img
-                                src={`http://localhost:5000/uploads/${adminProfile.adminLogo}`}
+                                src={`https://ganesh-portfolio-api.onrender.com/uploads/${adminProfile.adminLogo}`}
                                 alt="Logo"
                                 className="w-full h-full object-cover"
                             />

@@ -9,7 +9,7 @@ const ManageProjects = () => {
     // --- FETCH DATA ---
     const fetchData = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/projects');
+            const res = await axios.get('https://ganesh-portfolio-api.onrender.com/api/projects');
             setProjects(res.data);
         } catch (error) { console.error("Error fetching projects:", error); }
     };
@@ -20,7 +20,7 @@ const ManageProjects = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this project?")) return;
         try {
-            await axios.delete(`http://localhost:5000/api/projects/delete/${id}`);
+            await axios.delete(`https://ganesh-portfolio-api.onrender.com/api/projects/delete/${id}`);
             fetchData(); // List refresh karo
         } catch (error) { alert("Error deleting project"); }
     };

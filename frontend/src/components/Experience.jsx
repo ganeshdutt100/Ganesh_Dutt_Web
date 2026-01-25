@@ -10,7 +10,7 @@ const Experience = () => {
     useEffect(() => {
         const fetchExp = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/experience');
+                const res = await axios.get('https://ganesh-portfolio-api.onrender.com/api/experience');
                 setExperiences(res.data);
             } catch (error) {
                 console.error("Error fetching experience:", error);

@@ -12,7 +12,7 @@ if (!chatWithAI) {
 }
 
 // Route Setup
-// Note: Frontend agar 'http://localhost:5000/api/chat' call kar raha hai to yahan '/' ayega
+// Note: Frontend agar 'https://ganesh-portfolio-api.onrender.com/api/chat' call kar raha hai to yahan '/' ayega
 router.post("/", chatWithAI);
 
 module.exports = router;

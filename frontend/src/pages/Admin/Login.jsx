@@ -17,7 +17,7 @@ const Login = () => {
 
         try {
             // BACKEND CALL 📡
-            const res = await axios.post('http://localhost:5000/api/auth/login', { password });
+            const res = await axios.post('https://ganesh-portfolio-api.onrender.com/api/auth/login', { password });
 
             // Agar success hua to token save karo
             if (res.data.token) {

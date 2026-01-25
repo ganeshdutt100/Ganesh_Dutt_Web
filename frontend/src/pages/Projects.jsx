@@ -28,7 +28,7 @@ const Projects = () => {
 
     const fetchProjects = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/projects');
+            const res = await fetch('https://ganesh-portfolio-api.onrender.com/api/projects');
             const data = await res.json();
             setProjects(data);
             setLoading(false);
@@ -48,7 +48,7 @@ const Projects = () => {
     const handleAuthSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('http://localhost:5000/api/admin/verify-password', {
+            const res = await fetch('https://ganesh-portfolio-api.onrender.com/api/admin/verify-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password: adminKey })
@@ -114,7 +114,7 @@ const Projects = () => {
                 image: imageUrl // Send URL
             };
 
-            const res = await fetch('http://localhost:5000/api/projects/add', {
+            const res = await fetch('https://ganesh-portfolio-api.onrender.com/api/projects/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Important for JSON

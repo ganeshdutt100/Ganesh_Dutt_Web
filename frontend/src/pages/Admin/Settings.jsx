@@ -17,12 +17,12 @@ const Settings = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/profile');
+                const res = await axios.get('https://ganesh-portfolio-api.onrender.com/api/profile');
                 if (res.data) {
                     setFormData(res.data);
                     // Agar pehle se logo hai to preview dikhao
                     if (res.data.adminLogo) {
-                        setPreview(`http://localhost:5000/uploads/${res.data.adminLogo}`);
+                        setPreview(`https://ganesh-portfolio-api.onrender.com/uploads/${res.data.adminLogo}`);
                     }
                 }
             } catch (error) {
@@ -59,7 +59,7 @@ const Settings = () => {
         }
 
         try {
-            const res = await axios.put('http://localhost:5000/api/profile/update', data, {
+            const res = await axios.put('https://ganesh-portfolio-api.onrender.com/api/profile/update', data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             setMessage("✅ " + res.data.message);

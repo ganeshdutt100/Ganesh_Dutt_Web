@@ -17,7 +17,7 @@ const ManageExperience = () => {
     // Fetch
     const fetchExp = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/experience');
+            const res = await axios.get('https://ganesh-portfolio-api.onrender.com/api/experience');
             setExperiences(res.data);
         } catch (error) { console.error(error); }
     };
@@ -51,7 +51,7 @@ const ManageExperience = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post('http://localhost:5000/api/experience/add', form);
+            await axios.post('https://ganesh-portfolio-api.onrender.com/api/experience/add', form);
             fetchExp();
             // Reset Form
             setForm({ role: '', company: '', duration: '', description: '', location: '', tags: [] });
@@ -64,7 +64,7 @@ const ManageExperience = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this experience?")) return;
         try {
-            await axios.delete(`http://localhost:5000/api/experience/delete/${id}`);
+            await axios.delete(`https://ganesh-portfolio-api.onrender.com/api/experience/delete/${id}`);
             fetchExp();
         } catch (error) { alert("Error deleting"); }
     };

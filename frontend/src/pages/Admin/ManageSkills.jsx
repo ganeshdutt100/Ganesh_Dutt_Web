@@ -12,7 +12,7 @@ const ManageSkills = () => {
     // FETCH
     const fetchSkills = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/skills');
+            const res = await axios.get('https://ganesh-portfolio-api.onrender.com/api/skills');
             setSkills(res.data);
         } catch (error) {
             console.error("Error fetching skills:", error);
@@ -33,7 +33,7 @@ const ManageSkills = () => {
 
         setLoading(true);
         try {
-            await axios.post('http://localhost:5000/api/skills/add', formData, {
+            await axios.post('https://ganesh-portfolio-api.onrender.com/api/skills/add', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             fetchSkills();
@@ -51,7 +51,7 @@ const ManageSkills = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this skill?")) return;
         try {
-            await axios.delete(`http://localhost:5000/api/skills/delete/${id}`);
+            await axios.delete(`https://ganesh-portfolio-api.onrender.com/api/skills/delete/${id}`);
             fetchSkills();
         } catch (error) {
             alert("Error deleting");
@@ -125,7 +125,7 @@ const ManageSkills = () => {
                             <FaTrash />
                         </button>
                         <img
-                            src={`http://localhost:5000/uploads/${skill.image}`}
+                            src={`https://ganesh-portfolio-api.onrender.com/uploads/${skill.image}`}
                             alt={skill.name}
                             className="w-10 h-10 object-contain mb-2"
                         />

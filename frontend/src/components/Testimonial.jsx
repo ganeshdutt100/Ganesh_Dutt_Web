@@ -18,7 +18,7 @@ const Testimonials = () => {
 
     const fetchReviews = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/testimonials');
+            const res = await axios.get('https://ganesh-portfolio-api.onrender.com/api/testimonials');
             setReviews(res.data);
         } catch (error) { console.error("Error fetching reviews", error); }
     };
@@ -77,7 +77,7 @@ const Testimonials = () => {
                 image: imageUrl
             };
 
-            await axios.post('http://localhost:5000/api/testimonials/add', reviewData);
+            await axios.post('https://ganesh-portfolio-api.onrender.com/api/testimonials/add', reviewData);
 
             alert("Thanks for your review! 🚀");
             setIsModalOpen(false);
