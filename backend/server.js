@@ -27,6 +27,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://ganesh-dutt-web.vercel.app", // 👈 Yahan apni EXACT Vercel link dalo
+  "https://ganeshdutt.vercel.app",
   "https://ganeshdutt100-projects.vercel.app", // Agar koi aur link hai to wo bhi
 ];
 
