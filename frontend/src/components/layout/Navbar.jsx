@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 // Is line ko copy-paste kar lo (Instagram aur MobileAlt add kar diya hai)
-import { FaBars, FaTimes, FaGithub, FaLinkedin, FaInstagram, FaMobileAlt } from 'react-icons/fa';
+import { FaBars, FaTimes, FaGithub, FaLinkedin, FaInstagram, FaMobileAlt, FaCode } from 'react-icons/fa';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -22,9 +22,20 @@ const Navbar = () => {
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
                     {/* 1. LOGO */}
-                    <Link to="/" className="text-2xl font-bold tracking-tighter" data-aos="fade-left"
-                        data-aos-delay="200" onClick={() => setIsOpen(false)}>
-                        GANESH <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">DUTT.</span>
+                    <Link
+                        to="/"
+                        // 👇 Fix: 'flex items-center gap-2' joda taaki icon aur text seedh me rahe
+                        className="text-2xl font-bold tracking-tighter flex items-center gap-2 group"
+                        data-aos="fade-left"
+                        data-aos-delay="200"
+                        onClick={() => setIsOpen(false)}
+                    >
+                        {/* 👇 Icon ko color aur size diya */}
+                        <FaCode className="text-blue-500 text-3xl group-hover:scale-110 transition-transform duration-300" />
+
+                        <span>
+                            GANESH <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">DUTT.</span>
+                        </span>
                     </Link>
 
                     {/* 2. DESKTOP MENU (Hidden on Mobile) */}
