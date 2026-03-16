@@ -1,47 +1,45 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-require("dotenv").config(); // Dotenv load karna zaroori hai
+const Groq = require("groq-sdk");
 
-// API Key Check
-const genAI = process.env.GEMINI_API_KEY
-  ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-  : null;
-
-const chatWithAI = async (req, res) => {
+const handleChat = async (req, res) => {
   try {
-    const { message } = req.body;
+    // 👇 FIX: Groq client setup ko function ke andar rakh diya
+    // Ab ye tabhi chalega jab server puri tarah on ho jayega aur .env load ho chuki hogi
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-    // 1. Check Key & Message
-    if (!genAI) {
-      return res.status(500).json({ reply: "Server Error: API Key missing." });
+    const { prompt } = req.body; // Frontend se aane wala message
+
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt is required" });
     }
-    if (!message) {
-      return res.status(400).json({ reply: "Please send a message." });
-    }
 
-    // 2. Persona Set Karo
-    const systemPrompt = `
-      You are an AI Assistant for **Ganesh Dutt**'s Portfolio.
-      About Ganesh: MERN Stack Developer, Expert in React & Node.js.
-      
-      Instructions:
-      - Act polite and professional.
-      - Keep answers short (under 50 words).
-      - If asked "Who made you?", say "I am powered by Gemini AI, integrated by Ganesh."
-      
-      User Question: ${message}
-    `;
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        // System prompt
+        {
+          role: "system",
+          content:
+            "You are a helpful assistant on the portfolio website of Ganesh Dutt, a Full Stack Web Developer & Trainer. Keep your answers short, professional, and friendly.",
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      // Llama 3 model
+      model: "llama-3.1-8b-instant",
+    });
 
-    // 3. AI Model Call
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(systemPrompt);
-    const response = await result.response;
-    const text = response.text();
+    // Groq ka reply nikalna
+    const botReply =
+      chatCompletion.choices[0]?.message?.content ||
+      "Sorry, I couldn't understand that.";
 
-    res.status(200).json({ reply: text });
+    // Frontend ko response bhejna
+    res.status(200).json({ reply: botReply });
   } catch (error) {
-    console.error("AI Error:", error);
-    res.status(500).json({ reply: "My brain is tired. Try again later!" });
+    console.error("Groq API Error:", error);
+    res.status(500).json({ error: "Something went wrong with the chatbot!" });
   }
 };
 
-module.exports = { chatWithAI };
+module.exports = { handleChat };

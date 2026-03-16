@@ -1,13 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const { chatWithAI } = require("../controllers/chatController");
+
+// 👇 FIX: 'chatWithAI' ki jagah 'handleChat' likhna hai
+const { handleChat } = require("../controllers/chatController");
 
 // Error check
-if (!chatWithAI) {
-  console.error("❌ CRITICAL: chatController Import Failed!");
+if (!handleChat) {
+  console.error(
+    "❌ CRITICAL: chatController Import Failed! Please check export name.",
+  );
 }
 
-// Route: Ye '/' ka matlab '/api/chat/' hoga kyunki server.js me hum '/api/chat' mount karenge
-router.post("/", chatWithAI);
+// Route: Ye '/' ka matlab '/api/chat/' hoga
+router.post("/", handleChat);
 
 module.exports = router;
